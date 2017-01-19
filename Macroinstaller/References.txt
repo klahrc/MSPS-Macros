@@ -1,0 +1,5 @@
+VBA|Visual Basic For Applications|{000204EF-0000-0000-C000-000000000046}|4|1|C:\PROGRA~2\COMMON~1\MICROS~1\VBA\VBA7\VBE7.DLL
+MSProject|Microsoft Project 14.0 Object Library|{A7107640-94DF-1068-855E-00DD01075445}|4|7|C:\Program Files (x86)\Microsoft Office\Office14\MSPRJ.OLB
+stdole|OLE Automation|{00020430-0000-0000-C000-000000000046}|2|0|C:\Windows\SysWOW64\stdole2.tlb
+Office|Microsoft Office 14.0 Object Library|{2DF8D04C-5BFA-101B-BDE5-00AA0044DE52}|2|5|C:\Program Files (x86)\Common Files\Microsoft Shared\OFFICE14\MSO.DLL
+MSForms|Microsoft Forms 2.0 Object Library|{0D452EE1-E08F-101A-852E-02608C4D0BB4}|2|0|C:\Windows\SysWOW64\FM20.DLL
