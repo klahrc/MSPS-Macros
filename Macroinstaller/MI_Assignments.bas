@@ -48,11 +48,11 @@ Const nBY_RES = 2
 '////////////////////////////////////////////////////////////
 
 '//////////////// LATE BINDING DECLARATIONS////////////////
-Dim m_rngRow As Object                                                                   ' Row Index
-Dim m_rngCol As Object                                                                   ' Column Index
+Dim m_rngRow As Object        ' Row Index
+Dim m_rngCol As Object        ' Column Index
 '////////////////////////////////////////////////////////////
 
-Dim m_WoD As String                                                                      ' Work or Days in the Gantt Chart?
+Dim m_WoD As String        ' Work or Days in the Gantt Chart?
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 ' Description:
@@ -96,45 +96,48 @@ End Sub
 ' Initial version
 '
 Public Sub MI_Assignments()
-'//////////////// EARLY BINDING DECLARATIONS////////////////
-'    Dim xlApp As Excel.Application
-'    Dim wbWkBk1 As Excel.Workbook
-'    Dim wsSheet1 As Excel.Worksheet
-'    Dim rngLastCol As Excel.Range                                                        ' Last column before Gantt Chart
-'    Dim rngResourceRow As Excel.Range                                                        ' Task Row (need to go back to paint status)
-'////////////////////////////////////////////////////////////
+    '//////////////// EARLY BINDING DECLARATIONS////////////////
+    '    Dim xlApp As Excel.Application
+    '    Dim wbWkBk1 As Excel.Workbook
+    '    Dim wsSheet1 As Excel.Worksheet
+    '    Dim rngLastCol As Excel.Range                                                        ' Last column before Gantt Chart
+    '    Dim rngResourceRow As Excel.Range                                                        ' Task Row (need to go back to paint status)
+    '////////////////////////////////////////////////////////////
 
-'//////////////// LATE BINDING DECLARATIONS////////////////
+    '//////////////// LATE BINDING DECLARATIONS////////////////
     Dim xlApp As Object
     Dim wbWkBk1 As Object
     Dim wsSheet1 As Object
-    Dim rngLastCol As Object                                                             ' Last column before Gantt Chart
-    Dim rngResourceRow As Object                                                         ' Task Row (need to go back to paint status)
+    Dim rngLastCol As Object        ' Last column before Gantt Chart
+    Dim rngResourceRow As Object        ' Task Row (need to go back to paint status)
     '////////////////////////////////////////////////////////////
 
-    Dim pj As Project                                                                    ' Project variable
-    Dim t As Task                                                                        ' Task variable
-    Dim Asgn As Assignment                                                               ' Asgn variable
+    Dim pj As Project        ' Project variable
+    Dim t As Task        ' Task variable
+    Dim Asgn As Assignment        ' Asgn variable
 
-    Dim iOutlineCol As Integer                                                           ' Store number of columns needed for outline levels
-    Dim iColumns As Integer                                                              ' Index for current column
-    Dim iTotRes As Integer                                                               ' Total number of tasks in the project
+    Dim iOutlineCol As Integer        ' Store number of columns needed for outline levels
+    Dim iColumns As Integer        ' Index for current column
+    Dim iTotRes As Integer        ' Total number of tasks in the project
 
-    Dim d As Date                                                                        ' Temporary variable to hold dates
-    Dim dGntStart, dGntFinish As Date                                                    ' Start and Finish dates for Gantt Chart
+    Dim d As Date        ' Temporary variable to hold dates
+    Dim dGntStart, dGntFinish As Date        ' Start and Finish dates for Gantt Chart
 
-    Dim iWeekDayGanttStart As Integer                                                    ' WeekDay of the Start Date in the Gantt Chart
-    Dim iNumOfWeeksInGanttChart As Integer                                               ' Number of weeks in Gantt Chart
+    Dim iWeekDayGanttStart As Integer        ' WeekDay of the Start Date in the Gantt Chart
+    Dim iNumOfWeeksInGanttChart As Integer        ' Number of weeks in Gantt Chart
     Dim iX1GanttCoord, iY1GanttCoord As Integer
     Dim iX2GanttCoord, iY2GanttCoord As Integer
-    Dim i, p                                                                             ' Index variable (multipurpose)
-    Dim iReply As Integer                                                                ' Store user's reply
+    Dim i, p        ' Index variable (multipurpose)
+    Dim iReply As Integer        ' Store user's reply
 
     Dim bAddTaskInfo As Boolean
 
+    Dim sExcelAppCap As String        'To make the macro Excel 2013 compatible
+    Dim sProjAppCap As String        'To make the macro Excel 2013 compatible
 
-    Dim TSVActualWork As TimeScaleValues                                                 ' Will hold Timescale data for Actual Work
-    Dim TSVPlannedWork As TimeScaleValues                                                ' Will hold Timescale data for Planned Work
+
+    Dim TSVActualWork As TimeScaleValues        ' Will hold Timescale data for Actual Work
+    Dim TSVPlannedWork As TimeScaleValues        ' Will hold Timescale data for Planned Work
 
     ' Define timescale unit. Can be one of the following PjTimescaleUnit constants:
     ' pjTimescaleYears, pjTimescaleQuarters, pjTimescaleMonths, pjTimescaleWeeks,pjTimescaleDays, pjTimescaleHours, pjTimescaleMinutes
@@ -162,7 +165,7 @@ Public Sub MI_Assignments()
 
 
     '********************************************************
-    m_WoD = "W"                                                                          ' Simulate until we have a form!
+    m_WoD = "W"        ' Simulate until we have a form!
     '********************************************************
 
     Set pj = ActiveProject
@@ -174,34 +177,38 @@ Public Sub MI_Assignments()
 
     End If
 
+    sProjAppCap = Application.Caption
+        
     ''' dGntStart = ActiveProject.ProjectStart
     ''' dGntFinish = ActiveProject.ProjectFinish
     dGntStart = ActiveProject.ProjectSummaryTask.Start
     dGntFinish = ActiveProject.ProjectSummaryTask.Finish
 
     ''' iNumOfWeeksInGanttChart = Int((dGntFinish - dGntStart) / 7) + 2
-    iNumOfWeeksInGanttChart = DateDiff("ww", dGntStart, dGntFinish) + 2                  ' Adding 1 extra week to show there is nothing planned for the last week
+    iNumOfWeeksInGanttChart = DateDiff("ww", dGntStart, dGntFinish) + 2        ' Adding 1 extra week to show there is nothing planned for the last week
 
 
-    Set xlApp = CreateObject("Excel.Application")                                        ' Create a new instance of Excel
+    Set xlApp = CreateObject("Excel.Application")        ' Create a new instance of Excel
     xlApp.Visible = True
-    xlApp.ReferenceStyle = xlA1LB                                                        ' as opposed to xlR1C1
+    xlApp.ReferenceStyle = xlA1LB        ' as opposed to xlR1C1
 
-    AppActivate "Microsoft Excel"
-
+    '''''''''''AppActivate "Microsoft Excel"
+    sExcelAppCap = Application.Caption
+    AppActivate sExcelAppCap
+    
     'xlApp.ScreenUpdating = False
     'xlApp.DisplayAlerts = False
 
-    Set wbWkBk1 = xlApp.Workbooks.Add                                                    ' Adding a new workbook
+    Set wbWkBk1 = xlApp.Workbooks.Add        ' Adding a new workbook
     wbWkBk1.Application.WindowState = xlMaximizedLB
 
 
-    Set wsSheet1 = wbWkBk1.Worksheets.Add                                                ' Adding a new spreadsheet
+    Set wsSheet1 = wbWkBk1.Worksheets.Add        ' Adding a new spreadsheet
     wsSheet1.Name = Left("Assignments - " + ActiveProject.Name, 31)
 
-    xlApp.ActiveWindow.DisplayGridlines = False                                          ' Remove Gridlines
+    xlApp.ActiveWindow.DisplayGridlines = False        ' Remove Gridlines
 
-    With wsSheet1.cells.Font                                                             ' Set font properties
+    With wsSheet1.cells.Font        ' Set font properties
         .Name = "Calibri"
         .FontStyle = "Regular"
         .Size = 10
@@ -209,7 +216,7 @@ Public Sub MI_Assignments()
 
     ''''''''''''''''''''''''''''''''''''''''''''' Add Columns and configure the Detailed Report Section '''''''''''''''''''''''''''''''''''''''''''''''
     'Set Range to write to first cell
-    Set m_rngRow = xlApp.ActiveCell                                                      ' At the beginning ActiveCell is A1
+    Set m_rngRow = xlApp.ActiveCell        ' At the beginning ActiveCell is A1
     m_rngRow.ColumnWidth = 1
     m_rngRow = "Filename: " & ActiveProject.Name + " - Date: " + Format(Now(), "ddd dd-mmm-yyyy") + " - Assignments"
     m_rngRow.Font.Bold = True
@@ -331,22 +338,22 @@ Public Sub MI_Assignments()
     rgt 1
     m_rngCol.ColumnWidth = 1
 
-    Set rngLastCol = m_rngCol                                                            ' Save last column before Gantt
+    Set rngLastCol = m_rngCol        ' Save last column before Gantt
 
     '''''''''''''''''''''''''''''''''''''''''''''''''' Add Columns and configure the Gannt Chart '''''''''''''''''''''''''''''''''''''''''''''''''''''
 
     '''' iWeekDayGanttStart = Weekday(dGntStart)                                              ' Weekday returns 1,7 (Sunday to Saturday)
     ''''d = dGntStart + 6 - iWeekDayGanttStart                                               ' Align to Fridays 6=Friday!
 
-    d = dGntStart + 8 - Weekday(dGntStart, vbFriday)                                     ' Align to Fridays! //////////////////
+    d = dGntStart + 8 - Weekday(dGntStart, vbFriday)        ' Align to Fridays! //////////////////
 
     For i = 1 To iNumOfWeeksInGanttChart
         ' Add columns for Gantt chart
         m_rngCol.EntireColumn.Offset(0, 1).Insert
 
-        If (m_WoD) = "D" Then                                                            ' When showing Days in the Gantt blocks
+        If (m_WoD) = "D" Then        ' When showing Days in the Gantt blocks
             m_rngCol.EntireColumn.Offset(0, 1).ColumnWidth = 2
-        Else                                                                             ' Otherwise we need more room to show Work
+        Else        ' Otherwise we need more room to show Work
             m_rngCol.EntireColumn.Offset(0, 1).ColumnWidth = 4
         End If
 
@@ -381,33 +388,33 @@ Public Sub MI_Assignments()
             dwn 1
             Set m_rngCol = m_rngRow.Offset(0, 4)
             m_rngCol = t.Name
-            If (t.Manual) Then                                                           ' If task mode is manual highlight in red font
+            If (t.Manual) Then        ' If task mode is manual highlight in red font
                 m_rngCol = "(M) " + t.Name
                 m_rngCol.Font.Color = RGB(255, 0, 0)
             End If
             m_rngCol.Font.Bold = True
-            wsSheet1.cells(m_rngCol.row, 1) = "S"                                        ' Indicate it's a Summary Task
+            wsSheet1.cells(m_rngCol.row, 1) = "S"        ' Indicate it's a Summary Task
             wsSheet1.cells(m_rngCol.row, 1).Font.Name = "Kartika"
             wsSheet1.cells(m_rngCol.row, 1).Font.Size = 8
 
             rgt 1
             If (t.Duration <> 0) Then
-                m_rngCol = (t.Work / 60)                                                 ' Task work is stored is in minutes
+                m_rngCol = (t.Work / 60)        ' Task work is stored is in minutes
                 m_rngCol.NumberFormat = "#,##0.0"
                 m_rngCol.Font.Bold = True
 
                 rgt 1
-                m_rngCol = (t.BaselineWork / 60)                                         ' Task work is stored is in minutes
+                m_rngCol = (t.BaselineWork / 60)        ' Task work is stored is in minutes
                 m_rngCol.NumberFormat = "#,##0.0"
                 m_rngCol.Font.Bold = True
 
                 rgt 1
-                m_rngCol = (t.ActualWork / 60)                                           ' Task work is stored is in minutes
+                m_rngCol = (t.ActualWork / 60)        ' Task work is stored is in minutes
                 m_rngCol.NumberFormat = "#,##0.0"
                 m_rngCol.Font.Bold = True
 
                 rgt 1
-                m_rngCol = (t.RemainingWork / 60)                                        ' Task work is stored is in minutes
+                m_rngCol = (t.RemainingWork / 60)        ' Task work is stored is in minutes
                 m_rngCol.NumberFormat = "#,##0.0"
                 m_rngCol.Font.Bold = True
             Else
@@ -415,83 +422,83 @@ Public Sub MI_Assignments()
             End If
 
             rgt 1
-            m_rngCol = DateValue(t.Start)                                                ' Planned Start
+            m_rngCol = DateValue(t.Start)        ' Planned Start
             m_rngCol.Font.Bold = True
             m_rngCol.NumberFormat = "mm/dd/yy"
 
             rgt 1
-            m_rngCol = DateValue(t.Finish)                                               ' Planned Finsish
+            m_rngCol = DateValue(t.Finish)        ' Planned Finsish
             m_rngCol.Font.Bold = True
             m_rngCol.NumberFormat = "mm/dd/yy"
 
             rgt 1
-            If IsDate(t.BaselineStart) Then                                              ' If the project has been baselined
-                m_rngCol = DateValue(t.BaselineStart)                                    ' Show Baseline Start
+            If IsDate(t.BaselineStart) Then        ' If the project has been baselined
+                m_rngCol = DateValue(t.BaselineStart)        ' Show Baseline Start
                 m_rngCol.NumberFormat = "mm/dd/yy"
                 If (DateValue(t.Start) > DateValue(t.BaselineStart)) Then
                     m_rngCol.Font.Color = RGB(255, 0, 0)
                     m_rngCol.Offset(0, -2).Font.Color = RGB(255, 0, 0)
                 End If
             Else
-                m_rngCol = t.BaselineStart                                               ' N/A (No Baseline Start)
-                m_rngCol.Font.Color = RGB(255, 0, 0)                                     ' Highlight in red font
+                m_rngCol = t.BaselineStart        ' N/A (No Baseline Start)
+                m_rngCol.Font.Color = RGB(255, 0, 0)        ' Highlight in red font
                 m_rngCol.HorizontalAlignment = xlRight
             End If
             m_rngCol.Font.Bold = True
 
             rgt 1
-            If IsDate(t.BaselineFinish) Then                                             ' If the project has been baselined
-                m_rngCol = DateValue(t.BaselineFinish)                                   ' Show Baseline Finish
+            If IsDate(t.BaselineFinish) Then        ' If the project has been baselined
+                m_rngCol = DateValue(t.BaselineFinish)        ' Show Baseline Finish
                 m_rngCol.NumberFormat = "mm/dd/yy"
                 If (DateValue(t.Finish) > DateValue(t.BaselineFinish)) Then
                     m_rngCol.Font.Color = RGB(255, 0, 0)
                     m_rngCol.Offset(0, -2).Font.Color = RGB(255, 0, 0)
                 End If
             Else
-                m_rngCol = t.BaselineFinish                                              ' N/A (No Baseline Finish)
-                m_rngCol.Font.Color = RGB(255, 0, 0)                                     ' Highlight in red font
+                m_rngCol = t.BaselineFinish        ' N/A (No Baseline Finish)
+                m_rngCol.Font.Color = RGB(255, 0, 0)        ' Highlight in red font
                 m_rngCol.HorizontalAlignment = xlRight
             End If
             m_rngCol.Font.Bold = True
 
             rgt 1
-            If IsDate(t.ActualStart) Then                                                ' If the task has started
-                m_rngCol = DateValue(t.ActualStart)                                      ' Show actual Start
+            If IsDate(t.ActualStart) Then        ' If the task has started
+                m_rngCol = DateValue(t.ActualStart)        ' Show actual Start
                 m_rngCol.NumberFormat = "mm/dd/yy"
             Else
-                m_rngCol = t.ActualStart                                                 ' N/A (The task hasn't started yet)
+                m_rngCol = t.ActualStart        ' N/A (The task hasn't started yet)
                 m_rngCol.HorizontalAlignment = xlRight
             End If
             m_rngCol.Font.Bold = True
 
             rgt 1
-            If IsDate(t.ActualFinish) Then                                               ' If the task has finished
-                m_rngCol = DateValue(t.ActualFinish)                                     ' Show actual Finish
+            If IsDate(t.ActualFinish) Then        ' If the task has finished
+                m_rngCol = DateValue(t.ActualFinish)        ' Show actual Finish
                 m_rngCol.NumberFormat = "mm/dd/yy"
             Else
-                m_rngCol = t.ActualFinish                                                ' N/A
+                m_rngCol = t.ActualFinish        ' N/A
                 m_rngCol.HorizontalAlignment = xlRight
             End If
             m_rngCol.Font.Bold = True
 
             rgt 1
-            m_rngCol = Chr$(149)                                                         ' Ahead or Behind schedule?  - 149 is ASCII for the dot
+            m_rngCol = Chr$(149)        ' Ahead or Behind schedule?  - 149 is ASCII for the dot
             m_rngCol.Font.Size = 11
 
 
 
-            m_rngCol.Font.Color = RGB(0, 128, 0)                                         ' Show Green dot by default
-            If (t.PercentComplete = 0 And DateValue(t.Start) < DateValue(Now())) Then    ' Task should have started but it didn't
-                m_rngCol.Font.Color = RGB(255, 0, 0)                                     ' Red dot
+            m_rngCol.Font.Color = RGB(0, 128, 0)        ' Show Green dot by default
+            If (t.PercentComplete = 0 And DateValue(t.Start) < DateValue(Now())) Then        ' Task should have started but it didn't
+                m_rngCol.Font.Color = RGB(255, 0, 0)        ' Red dot
                 m_rngCol.Offset(0, -6).Font.Color = RGB(255, 0, 0)
             ElseIf (t.PercentComplete < 100) Then
-                If (IsDate(t.BaselineStart) And IsDate(t.BaselineFinish)) Then           ' If the project is baselined
+                If (IsDate(t.BaselineStart) And IsDate(t.BaselineFinish)) Then        ' If the project is baselined
                     If ((DateValue(t.Finish) > DateValue(t.BaselineFinish)) Or _
-                        (DateValue(t.Start) > DateValue(t.BaselineStart))) Then          ' If there is a slippage
-                        m_rngCol.Font.Color = RGB(255, 0, 0)                             ' Show Red dot
+                        (DateValue(t.Start) > DateValue(t.BaselineStart))) Then        ' If there is a slippage
+                        m_rngCol.Font.Color = RGB(255, 0, 0)        ' Show Red dot
                     End If
                 Else
-                    m_rngCol.Font.Color = RGB(255, 0, 0)                                 ' Show Red dot if there is no baseline info!
+                    m_rngCol.Font.Color = RGB(255, 0, 0)        ' Show Red dot if there is no baseline info!
                 End If
             End If
 
@@ -501,15 +508,15 @@ Public Sub MI_Assignments()
             m_rngCol.HorizontalAlignment = xlCenter
 
             rgt 1
-            m_rngCol = Chr$(149)                                                         ' Over or Under estimates?  - 149 is ASCII for the dot
+            m_rngCol = Chr$(149)        ' Over or Under estimates?  - 149 is ASCII for the dot
             m_rngCol.Font.Size = 11
             m_rngCol.Font.Color = RGB(0, 128, 0)
-            If (IsDate(t.BaselineStart)) Then                                            ' Perhaps I should just ask if ISNUM (t.BaselineWork)????
-                If (t.PercentComplete < 100 And t.Work > t.BaselineWork) Then            ' If AC is greater than BL and the task is not completed
-                    m_rngCol.Font.Color = RGB(255, 0, 0)                                 ' Show Red dot
+            If (IsDate(t.BaselineStart)) Then        ' Perhaps I should just ask if ISNUM (t.BaselineWork)????
+                If (t.PercentComplete < 100 And t.Work > t.BaselineWork) Then        ' If AC is greater than BL and the task is not completed
+                    m_rngCol.Font.Color = RGB(255, 0, 0)        ' Show Red dot
                 End If
             ElseIf (t.PercentComplete < 100) Then
-                m_rngCol.Font.Color = RGB(255, 0, 0)                                     ' Show Red dot
+                m_rngCol.Font.Color = RGB(255, 0, 0)        ' Show Red dot
             End If
             m_rngCol.Font.Bold = True
             m_rngCol.HorizontalAlignment = xlCenter
@@ -536,12 +543,12 @@ Public Sub MI_Assignments()
     '''nLastActualAssignmentPeriod = -1
 
     For p = 1 To TSVActualWork.Count
-        If Not TSVActualWork(p).Value = "" And Not TSVActualWork(p).Value = 0 Then       ' If there are actuals for that period (p)
-            If TSVActualWork(p).Value = TSVPlannedWork(p).Value Then                     ' The plan should be the same as actuals, if so show AC using white font
+        If Not TSVActualWork(p).Value = "" And Not TSVActualWork(p).Value = 0 Then        ' If there are actuals for that period (p)
+            If TSVActualWork(p).Value = TSVPlannedWork(p).Value Then        ' The plan should be the same as actuals, if so show AC using white font
                 m_rngRow.Offset(0, rngLastCol.Column + p - 1) = TSVActualWork(p).Value / 60
                 m_rngRow.Offset(0, rngLastCol.Column + p - 1).NumberFormat = "0.0"
                 m_rngRow.Offset(0, rngLastCol.Column + p - 1).Font.Color = vbGreen
-            ElseIf Not TSVPlannedWork(p).Value = "" And Not TSVPlannedWork(p).Value = 0 Then    ' If PV <> AC then If there is Planned work for that period (p), show AC using red font
+            ElseIf Not TSVPlannedWork(p).Value = "" And Not TSVPlannedWork(p).Value = 0 Then        ' If PV <> AC then If there is Planned work for that period (p), show AC using red font
                 m_rngRow.Offset(0, rngLastCol.Column + p - 1) = TSVActualWork(p).Value / 60
                 m_rngRow.Offset(0, rngLastCol.Column + p - 1).NumberFormat = "0.0"
                 m_rngRow.Offset(0, rngLastCol.Column + p - 1).Font.Color = vbYellow
@@ -552,8 +559,8 @@ Public Sub MI_Assignments()
             '''If (nLastPlannedAssignmentPeriod <> 0) Then nLastPlannedAssignmentPeriod = p
             '''If (nFirstActualAssignmentPeriod = 0) Then nFirstActualAssignmentPeriod = p
             '''If (nLastActualAssignmentPeriod <> 0) Then nLastActualAssignmentPeriod = p
-        Else                                                                             ' There are no actuals for that period (p), therefore show planned work
-            If Not TSVPlannedWork(p).Value = "" And Not TSVPlannedWork(p).Value = 0 Then    ' If there is work planned for that period (p), show it using yellow font
+        Else        ' There are no actuals for that period (p), therefore show planned work
+            If Not TSVPlannedWork(p).Value = "" And Not TSVPlannedWork(p).Value = 0 Then        ' If there is work planned for that period (p), show it using yellow font
                 m_rngRow.Offset(0, rngLastCol.Column + p - 1) = TSVPlannedWork(p).Value / 60
                 m_rngRow.Offset(0, rngLastCol.Column + p - 1).NumberFormat = "0.0"
                 m_rngRow.Offset(0, rngLastCol.Column + p - 1).Font.Color = vbWhite
@@ -580,7 +587,7 @@ Public Sub MI_Assignments()
         If Not r Is Nothing Then
             If (r.Assignments.Count > 0) Then
                 dwn 1
-                Set rngResourceRow = m_rngRow                                            ' Save start row for this task
+                Set rngResourceRow = m_rngRow        ' Save start row for this task
                 Set m_rngCol = m_rngRow.Offset(0, 3)
 
 
@@ -592,31 +599,31 @@ Public Sub MI_Assignments()
 
                 rgt 2
                 If (IsNumeric(r.Work)) Then
-                    m_rngCol = (r.Work / 60)                                             ' Task work is stored is in minutes
+                    m_rngCol = (r.Work / 60)        ' Task work is stored is in minutes
                     m_rngCol.NumberFormat = "#,##0.0"
                 End If
 
                 rgt 1
                 If (IsNumeric(r.BaselineWork)) Then
-                    m_rngCol = (r.BaselineWork / 60)                                     ' Task work is stored is in minutes
+                    m_rngCol = (r.BaselineWork / 60)        ' Task work is stored is in minutes
                     m_rngCol.NumberFormat = "#,##0.0"
                 End If
 
 
                 rgt 1
                 If (IsNumeric(r.ActualWork)) Then
-                    m_rngCol = (r.ActualWork / 60)                                       ' Task work is stored is in minutes
+                    m_rngCol = (r.ActualWork / 60)        ' Task work is stored is in minutes
                     m_rngCol.NumberFormat = "#,##0.0"
                 End If
 
                 rgt 1
                 If (IsNumeric(r.RemainingWork)) Then
-                    m_rngCol = (r.RemainingWork / 60)                                    ' Task work is stored is in minutes
+                    m_rngCol = (r.RemainingWork / 60)        ' Task work is stored is in minutes
                     m_rngCol.NumberFormat = "#,##0.0"
                 End If
 
 
-                If (m_WoD = "W") Then                                                    ' Show work if requested
+                If (m_WoD = "W") Then        ' Show work if requested
                     Set TSVPlannedWork = r.TimeScaleData(dGntStart, dGntFinish, _
                                                          Type:=pjResourceTimescaledWork, TimescaleUnit:=TimescaleUnit)
                     Set TSVActualWork = r.TimeScaleData(dGntStart, dGntFinish, _
@@ -635,12 +642,12 @@ Public Sub MI_Assignments()
                     '''nLastActualAssignmentPeriod = -1
 
                     For p = 1 To TSVActualWork.Count
-                        If Not TSVActualWork(p).Value = "" And Not TSVActualWork(p).Value = 0 Then    ' If there are actuals for that period (p)
-                            If TSVActualWork(p).Value = TSVPlannedWork(p).Value Then     ' The plan should be the same as actuals, if so show AC using white font
+                        If Not TSVActualWork(p).Value = "" And Not TSVActualWork(p).Value = 0 Then        ' If there are actuals for that period (p)
+                            If TSVActualWork(p).Value = TSVPlannedWork(p).Value Then        ' The plan should be the same as actuals, if so show AC using white font
                                 m_rngRow.Offset(0, rngLastCol.Column + p - 1) = TSVActualWork(p).Value / 60
                                 m_rngRow.Offset(0, rngLastCol.Column + p - 1).NumberFormat = "0.0"
                                 m_rngRow.Offset(0, rngLastCol.Column + p - 1).Font.Color = vbGreen
-                            ElseIf Not TSVPlannedWork(p).Value = "" And Not TSVPlannedWork(p).Value = 0 Then    ' If PV <> AC then If there is Planned work for that period (p), show AC using red font
+                            ElseIf Not TSVPlannedWork(p).Value = "" And Not TSVPlannedWork(p).Value = 0 Then        ' If PV <> AC then If there is Planned work for that period (p), show AC using red font
                                 m_rngRow.Offset(0, rngLastCol.Column + p - 1) = TSVActualWork(p).Value / 60
                                 m_rngRow.Offset(0, rngLastCol.Column + p - 1).NumberFormat = "0.0"
                                 m_rngRow.Offset(0, rngLastCol.Column + p - 1).Font.Color = vbYellow
@@ -651,8 +658,8 @@ Public Sub MI_Assignments()
                             '''If (nLastPlannedAssignmentPeriod <> 0) Then nLastPlannedAssignmentPeriod = p
                             '''If (nFirstActualAssignmentPeriod = 0) Then nFirstActualAssignmentPeriod = p
                             '''If (nLastActualAssignmentPeriod <> 0) Then nLastActualAssignmentPeriod = p
-                        Else                                                             ' There are no actuals for that period (p), therefore show planned work
-                            If Not TSVPlannedWork(p).Value = "" And Not TSVPlannedWork(p).Value = 0 Then    ' If there is work planned for that period (p), show it using yellow font
+                        Else        ' There are no actuals for that period (p), therefore show planned work
+                            If Not TSVPlannedWork(p).Value = "" And Not TSVPlannedWork(p).Value = 0 Then        ' If there is work planned for that period (p), show it using yellow font
                                 m_rngRow.Offset(0, rngLastCol.Column + p - 1) = TSVPlannedWork(p).Value / 60
                                 m_rngRow.Offset(0, rngLastCol.Column + p - 1).NumberFormat = "0.0"
                                 m_rngRow.Offset(0, rngLastCol.Column + p - 1).Font.Color = vbWhite
@@ -809,7 +816,7 @@ Public Sub MI_Assignments()
                             m_rngCol = Asgn.Task.PhysicalPercentComplete
                             m_rngCol.Font.Size = 8
 
-                            If (Asgn.Task.PercentComplete <> Asgn.Task.PhysicalPercentComplete) Then    ' Highlight in red font if %C differs from PhysicalPercentComplete
+                            If (Asgn.Task.PercentComplete <> Asgn.Task.PhysicalPercentComplete) Then        ' Highlight in red font if %C differs from PhysicalPercentComplete
                                 m_rngCol.Font.Color = RGB(255, 0, 0)
                                 m_rngCol.Font.Bold = True
                                 m_rngCol.Offset(0, -1).Font.Color = RGB(255, 0, 0)
@@ -825,27 +832,27 @@ Public Sub MI_Assignments()
                             m_rngCol.Font.Color = RGB(51, 102, 255)
 
                             rgt 1
-                            If IsNumeric(Asgn.Work) Then m_rngCol = (Asgn.Work / 60)     ' & " hours" 'It was 480?
+                            If IsNumeric(Asgn.Work) Then m_rngCol = (Asgn.Work / 60)        ' & " hours" 'It was 480?
                             m_rngCol.NumberFormat = "#,##0.0"
                             m_rngCol.Font.Color = RGB(51, 102, 255)
 
                             rgt 1
-                            If IsNumeric(Asgn.BaselineWork) Then m_rngCol = (Asgn.BaselineWork / 60)    ' & " hours" 'It was 480?
+                            If IsNumeric(Asgn.BaselineWork) Then m_rngCol = (Asgn.BaselineWork / 60)        ' & " hours" 'It was 480?
                             m_rngCol.NumberFormat = "#,##0.0"
                             m_rngCol.Font.Color = RGB(51, 102, 255)
 
                             rgt 1
-                            If IsNumeric(Asgn.ActualWork) Then m_rngCol = (Asgn.ActualWork / 60)    ' & " hours" 'It was 480?
+                            If IsNumeric(Asgn.ActualWork) Then m_rngCol = (Asgn.ActualWork / 60)        ' & " hours" 'It was 480?
                             m_rngCol.NumberFormat = "#,##0.0"
                             m_rngCol.Font.Color = RGB(51, 102, 255)
 
                             rgt 1
-                            If IsNumeric(Asgn.RemainingWork) Then m_rngCol = (Asgn.RemainingWork / 60)    ' & " hours" 'It was 480?
+                            If IsNumeric(Asgn.RemainingWork) Then m_rngCol = (Asgn.RemainingWork / 60)        ' & " hours" 'It was 480?
                             m_rngCol.NumberFormat = "#,##0.0"
                             m_rngCol.Font.Color = RGB(51, 102, 255)
 
                             rgt 1
-                            If IsDate(.Start) Then m_rngCol = DateValue(Asgn.Start)      ' (Asgn.ActualWork / 450) & " Days"
+                            If IsDate(.Start) Then m_rngCol = DateValue(Asgn.Start)        ' (Asgn.ActualWork / 450) & " Days"
                             m_rngCol.Font.Color = RGB(51, 102, 255)
                             m_rngCol.NumberFormat = "mm/dd/yy"
 
@@ -856,15 +863,15 @@ Public Sub MI_Assignments()
 
                             rgt 1
                             If IsDate(Asgn.BaselineStart) Then
-                                m_rngCol = DateValue(Asgn.BaselineStart)                 ' (Asgn.ActualWork / 450) & " Days"
+                                m_rngCol = DateValue(Asgn.BaselineStart)        ' (Asgn.ActualWork / 450) & " Days"
                                 m_rngCol.NumberFormat = "mm/dd/yy"
                                 m_rngCol.Font.Color = RGB(51, 102, 255)
                             Else
-                                m_rngCol = Asgn.BaselineStart                            'N/A
+                                m_rngCol = Asgn.BaselineStart        'N/A
                                 m_rngCol.HorizontalAlignment = xlRight
 
                                 If (Asgn.Task.PercentComplete < 100) Then
-                                    m_rngCol.Font.Color = RGB(255, 0, 0)                 ' Red font
+                                    m_rngCol.Font.Color = RGB(255, 0, 0)        ' Red font
                                 Else
                                     m_rngCol.Font.Color = RGB(51, 102, 255)
                                 End If
@@ -876,11 +883,11 @@ Public Sub MI_Assignments()
                                 m_rngCol.NumberFormat = "mm/dd/yy"
                                 m_rngCol.Font.Color = RGB(51, 102, 255)
                             Else
-                                m_rngCol = Asgn.BaselineFinish                           'N/A
+                                m_rngCol = Asgn.BaselineFinish        'N/A
                                 m_rngCol.HorizontalAlignment = xlRight
 
                                 If (Asgn.Task.PercentComplete < 100) Then
-                                    m_rngCol.Font.Color = RGB(255, 0, 0)                 ' Red font
+                                    m_rngCol.Font.Color = RGB(255, 0, 0)        ' Red font
                                 Else
                                     m_rngCol.Font.Color = RGB(51, 102, 255)
                                 End If
@@ -888,10 +895,10 @@ Public Sub MI_Assignments()
 
                             rgt 1
                             If IsDate(Asgn.ActualStart) Then
-                                m_rngCol = DateValue(Asgn.ActualStart)                   ' (Asgn.ActualWork / 450) & " Days"
+                                m_rngCol = DateValue(Asgn.ActualStart)        ' (Asgn.ActualWork / 450) & " Days"
                                 m_rngCol.NumberFormat = "mm/dd/yy"
                             Else
-                                m_rngCol = Asgn.ActualStart                              'N/A
+                                m_rngCol = Asgn.ActualStart        'N/A
                                 m_rngCol.HorizontalAlignment = xlRight
                             End If
                             m_rngCol.Font.Color = RGB(51, 102, 255)
@@ -901,13 +908,13 @@ Public Sub MI_Assignments()
                                 m_rngCol = DateValue(Asgn.ActualFinish)
                                 m_rngCol.NumberFormat = "mm/dd/yy"
                             Else
-                                m_rngCol = Asgn.ActualFinish                             'N/A
+                                m_rngCol = Asgn.ActualFinish        'N/A
                                 m_rngCol.HorizontalAlignment = xlRight
                             End If
                             m_rngCol.Font.Color = RGB(51, 102, 255)
 
                             rgt 1
-                            m_rngCol = Chr$(149)                                         ' Ahead or Behind schedule?
+                            m_rngCol = Chr$(149)        ' Ahead or Behind schedule?
                             m_rngCol.Font.Size = 11
 
 
@@ -915,19 +922,19 @@ Public Sub MI_Assignments()
 
 
 
-                            m_rngCol.Font.Color = RGB(0, 128, 0)                         ' Show Green dot by default
+                            m_rngCol.Font.Color = RGB(0, 128, 0)        ' Show Green dot by default
                             If IsDate(.Start) Then
-                                If (Asgn.Task.PercentComplete = 0 And DateValue(Asgn.Start) < DateValue(Now())) Then    ' Task should have started but it didn't
-                                    m_rngCol.Font.Color = RGB(255, 0, 0)                 ' Red dot
+                                If (Asgn.Task.PercentComplete = 0 And DateValue(Asgn.Start) < DateValue(Now())) Then        ' Task should have started but it didn't
+                                    m_rngCol.Font.Color = RGB(255, 0, 0)        ' Red dot
                                     m_rngCol.Offset(0, -6).Font.Color = RGB(255, 0, 0)
                                 ElseIf (Asgn.Task.PercentComplete < 100) Then
-                                    If (IsDate(Asgn.BaselineStart) And IsDate(Asgn.BaselineFinish)) Then    ' If the project is baselined
+                                    If (IsDate(Asgn.BaselineStart) And IsDate(Asgn.BaselineFinish)) Then        ' If the project is baselined
                                         If ((DateValue(Asgn.Finish) > DateValue(Asgn.BaselineFinish)) Or _
-                                            (DateValue(Asgn.Start) > DateValue(Asgn.BaselineStart))) Then    ' If there is a slippage
-                                            m_rngCol.Font.Color = RGB(255, 0, 0)         ' Show Red dot
+                                            (DateValue(Asgn.Start) > DateValue(Asgn.BaselineStart))) Then        ' If there is a slippage
+                                            m_rngCol.Font.Color = RGB(255, 0, 0)        ' Show Red dot
                                         End If
                                     Else
-                                        m_rngCol.Font.Color = RGB(255, 0, 0)             ' Show Red dot if there is no baseline info!
+                                        m_rngCol.Font.Color = RGB(255, 0, 0)        ' Show Red dot if there is no baseline info!
                                     End If
                                 End If
                             End If
@@ -940,41 +947,41 @@ Public Sub MI_Assignments()
                             m_rngCol.HorizontalAlignment = xlCenter
 
                             rgt 1
-                            m_rngCol = Chr$(149)                                         ' Over or under estimates
+                            m_rngCol = Chr$(149)        ' Over or under estimates
                             m_rngCol.Font.Size = 11
                             m_rngCol.Font.Color = RGB(0, 128, 0)
                             If (IsDate(Asgn.BaselineStart)) Then
                                 If (Asgn.Task.PercentComplete < 100 And Asgn.Work > Asgn.BaselineWork) Then
-                                    m_rngCol.Font.Color = RGB(255, 0, 0)                 ' Show Red dot
+                                    m_rngCol.Font.Color = RGB(255, 0, 0)        ' Show Red dot
                                 End If
                             ElseIf (Asgn.Task.PercentComplete < 100) Then
-                                m_rngCol.Font.Color = RGB(255, 0, 0)                     ' Show Red dot
+                                m_rngCol.Font.Color = RGB(255, 0, 0)        ' Show Red dot
                             End If
                             m_rngCol.Font.Bold = True
                             m_rngCol.HorizontalAlignment = xlCenter
                             rgt 1
 
 
-                            If (m_WoD = "W") Then                                        ' Show work if requested
+                            If (m_WoD = "W") Then        ' Show work if requested
                                 Set TSVPlannedWork = Asgn.TimeScaleData(dGntStart, dGntFinish, _
                                                                         Type:=pjAssignmentTimescaledWork, TimescaleUnit:=TimescaleUnit)
                                 Set TSVActualWork = Asgn.TimeScaleData(dGntStart, dGntFinish, _
-                                                                       Type:=pjAssignmentTimescaledActualWork, TimescaleUnit:=TimescaleUnit)    'pjAssignmentTimescaledWork
+                                                                       Type:=pjAssignmentTimescaledActualWork, TimescaleUnit:=TimescaleUnit)        'pjAssignmentTimescaledWork
                                 For p = 1 To TSVActualWork.Count
-                                    If Not TSVActualWork(p).Value = "" And Not TSVActualWork(p).Value = 0 Then    ' If there are actuals for that period (p)
-                                        If TSVActualWork(p).Value = TSVPlannedWork(p).Value Then    ' The plan should be the same as actuals, if so show AC using white font
+                                    If Not TSVActualWork(p).Value = "" And Not TSVActualWork(p).Value = 0 Then        ' If there are actuals for that period (p)
+                                        If TSVActualWork(p).Value = TSVPlannedWork(p).Value Then        ' The plan should be the same as actuals, if so show AC using white font
                                             m_rngRow.Offset(0, rngLastCol.Column + p - 1).Font.Size = 8
                                             m_rngRow.Offset(0, rngLastCol.Column + p - 1).Font.Color = vbGreen
                                             m_rngRow.Offset(0, rngLastCol.Column + p - 1) = TSVActualWork(p).Value / 60
                                             m_rngRow.Offset(0, rngLastCol.Column + p - 1).NumberFormat = "0.0"
-                                        ElseIf Not TSVPlannedWork(p).Value = "" And Not TSVPlannedWork(p).Value = 0 Then    ' If PV <> AC then If there is Planned work for that period (p), , show AC using red font
+                                        ElseIf Not TSVPlannedWork(p).Value = "" And Not TSVPlannedWork(p).Value = 0 Then        ' If PV <> AC then If there is Planned work for that period (p), , show AC using red font
                                             m_rngRow.Offset(0, rngLastCol.Column + p - 1) = TSVActualWork(p).Value / 60
                                             m_rngRow.Offset(0, rngLastCol.Column + p - 1).NumberFormat = "0.0"
                                             m_rngRow.Offset(0, rngLastCol.Column + p - 1).Font.Color = vbYellow
                                             m_rngRow.Offset(0, rngLastCol.Column + p - 1).AddComment ("P. W. : " + Format(TSVPlannedWork(p).Value / 60, "0.0"))
                                         End If
-                                    Else                                                 ' There are no actuals for that period (p), therefore show planned work
-                                        If Not TSVPlannedWork(p).Value = "" And Not TSVPlannedWork(p).Value = 0 Then    ' If there is work planned for that period (p), show it using yellow font
+                                    Else        ' There are no actuals for that period (p), therefore show planned work
+                                        If Not TSVPlannedWork(p).Value = "" And Not TSVPlannedWork(p).Value = 0 Then        ' If there is work planned for that period (p), show it using yellow font
                                             m_rngRow.Offset(0, rngLastCol.Column + p - 1) = TSVPlannedWork(p).Value / 60
                                             m_rngRow.Offset(0, rngLastCol.Column + p - 1).NumberFormat = "0.0"
                                             m_rngRow.Offset(0, rngLastCol.Column + p - 1).Font.Color = vbWhite
@@ -985,9 +992,9 @@ Public Sub MI_Assignments()
 
                             If (Asgn.Task.PercentComplete = 100) Then
                                 wsSheet1.Range(wsSheet1.cells(m_rngCol.row, 1), wsSheet1.cells(m_rngCol.row, m_rngCol.Column)).Interior.Color = RGB(224, 224, 224)
-                            ElseIf (Asgn.Task.PercentComplete > 0) Then                  ' In progress '(Not t.Summary And t.PercentComplete = 0 And t.Start < Now()) Then
+                            ElseIf (Asgn.Task.PercentComplete > 0) Then        ' In progress '(Not t.Summary And t.PercentComplete = 0 And t.Start < Now()) Then
                                 wsSheet1.Range(wsSheet1.cells(m_rngCol.row, 1), wsSheet1.cells(m_rngCol.row, m_rngCol.Column)).Interior.Color = RGB(182, 244, 182)
-                            ElseIf (Asgn.Task.Start > Now() And Asgn.Task.Start < Now() + 14) Then    ' Starting in the next 14 days
+                            ElseIf (Asgn.Task.Start > Now() And Asgn.Task.Start < Now() + 14) Then        ' Starting in the next 14 days
                                 wsSheet1.Range(wsSheet1.cells(m_rngCol.row, 1), wsSheet1.cells(m_rngCol.row, m_rngCol.Column)).Interior.Color = RGB(255, 255, 155)
                             End If
 
@@ -1039,13 +1046,13 @@ Public Sub MI_Assignments()
     sFinishCoord = xlApp.ConvertFormula(sCellFinish, xlR1C1LB, xlA1LB)
 
     vArr = Split(sGanttCoord, "$")
-    M = vArr(1)                                                                          'Column where Gantt starts
+    M = vArr(1)        'Column where Gantt starts
 
     vArr = Split(sStartCoord, "$")
-    K = vArr(1)                                                                          'Start column
+    K = vArr(1)        'Start column
 
     vArr = Split(sFinishCoord, "$")
-    l = vArr(1)                                                                          ' Finish column
+    l = vArr(1)        ' Finish column
 
     ' s = "=IF(AND(M$3>=$K4,M$3-5<$L4),
     '          IF($K4>M$3-5,
@@ -1083,7 +1090,7 @@ Public Sub MI_Assignments()
             .Borders(xlInsideHorizontalLB).Weight = xlThin
             .Borders(xlInsideHorizontalLB).Color = RGB(153, 204, 255)
 
-            If (m_WoD = "D") Then                                                        ' Show days if requested
+            If (m_WoD = "D") Then        ' Show days if requested
                 .Formula = s
             End If
 
@@ -1093,23 +1100,23 @@ Public Sub MI_Assignments()
             .FormatConditions.Add Type:=xlExpressionLB, Formula1:="=AND(" + M + "$3>=$" + K + "4," + M + "$3-5<$" + l + "4,$A4=""T"")"
             .FormatConditions.Add Type:=xlExpressionLB, Formula1:="=AND(" + M + "$3>=$" + K + "4," + M + "$3-5<$" + l + "4,$A4=""A"")"
 
-            With .FormatConditions(1)                                                    ' Milestone color
+            With .FormatConditions(1)        ' Milestone color
                 .SetFirstPriority
                 .Interior.Color = RGB(255, 50, 50)
 
             End With
 
-            With .FormatConditions(2)                                                    ' Summary Task color
+            With .FormatConditions(2)        ' Summary Task color
                 .Interior.Color = RGB(0, 0, 0)
 
             End With
 
-            With .FormatConditions(3)                                                    ' Task color
+            With .FormatConditions(3)        ' Task color
                 .Interior.Color = RGB(149, 55, 53)
 
             End With
 
-            With .FormatConditions(4)                                                    ' Assignment color
+            With .FormatConditions(4)        ' Assignment color
                 .Interior.Color = RGB(37, 64, 97)
 
             End With
@@ -1121,7 +1128,7 @@ Public Sub MI_Assignments()
     With wsSheet1
         For i = iY1GanttCoord To iY2GanttCoord
 
-            If (m_WoD = "W") Then                                                        ' Reduce font if I need to show Work
+            If (m_WoD = "W") Then        ' Reduce font if I need to show Work
                 .Range(.cells(4, i), .cells(iX2GanttCoord, i)).Font.Size = 8
             End If
 
@@ -1164,7 +1171,9 @@ Public Sub MI_Assignments()
 
     '''''''''''''''''''''''''''''''''''''''''''''''''''End of New Code'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
-    AppActivate "Microsoft Project"
+    '''AppActivate "Microsoft Project"
+    
+    AppActivate sProjAppCap
 
     MsgBox ("Macro Assignments Complete with " & iTotRes & " Resources Written")
 End Sub
